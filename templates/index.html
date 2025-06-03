@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Assistente Virtual de Gestão</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; }
+  table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background: #eee; }
+  input, select { padding: 6px; margin: 4px 0; }
+</style>
+</head>
+<body>
+<h1>Assistente Virtual de Gestão - Equipes de Campo</h1>
+
+<form method="GET" action="/">
+  <label>Nome do supervisor:
+    <input type="text" name="supervisor" value="{{ supervisor }}" required />
+  </label>
+  <button type="submit">Ver tarefas</button>
+</form>
+
+{% if supervisor %}
+<hr>
+<h2>Tarefas de {{ supervisor }}</h2>
+
+<form method="POST" action="/add">
+  <input type="hidden" name="supervisor" value="{{ supervisor }}">
+  <label>Data:
+    <input type="date" name="data" required />
+  </label>
+  <label>Descrição:
+    <input type="text" name="descricao" required />
+  </label>
+  <button type="submit">Adicionar tarefa</button>
+</form>
+
+<table>
+  <tr>
+    <th>Data</th>
+    <th>Descrição</th>
+    <th>Status</th>
+    <th>Início</th>
+    <th>Fim</th>
+    <th>Atualizar Status</th>
+  </tr>
+  {% for t in tarefas %}
+  <tr>
+    <td>{{ t[2] }}</td>
+    <td>{{ t[3] }}</td>
+    <td>{{ t[4] }}</td>
+    <td>{{ t[5] if t[5] else '-' }}</td>
+    <td>{{ t[6] if t[6] else '-' }}</td>
+    <td>
+      <form method="POST" action="/update_status/{{ t[0] }}">
+        <select name="status" onchange="this.form.submit()">
+          <option value="pendente" {% if t[4] == 'pendente' %}selected{% endif %}>Pendente</option>
+          <option value="iniciada" {% if t[4] == 'iniciada' %}selected{% endif %}>Iniciada</option>
+          <option value="concluida" {% if t[4] == 'concluida' %}selected{% endif %}>Concluída</option>
+        </select>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+</body>
+</html>
+Add templates/index.html
